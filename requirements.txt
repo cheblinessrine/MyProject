@@ -8,7 +8,5 @@ pypdf==4.2.0
 python-dotenv==1.0.1
 streamlit
 google.generativeai
-langchain
-langchain_community==0.0.16
 PyPDF2
 langchain_google_genai
