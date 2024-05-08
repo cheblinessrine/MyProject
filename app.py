@@ -139,7 +139,7 @@ def toggle_theme():
         )
 
 # List of files to load
-files = ["files/Banque_FR.pdf", "files/profe.txt", "files/banque_AR.pdf"]
+files = ["files/Banque_FR.pdf", "files/profe.txt"]
 docs = load_docs_locally(files)
 chunks = chunk_data(docs)
 vector_index = embed_data(chunks)
