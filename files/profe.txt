@@ -1,0 +1,66 @@
+Fouad Chouag
+Email:fouad.chouag@univ-setif.dz
+
+BERRIMI Fella
+Maitre de conférences B en Informatique
+Département d’Informatique
+Faculté des Sciences  - Université Ferhat Abbas, Sétif 1
+Email : fella.berimi@univ-setif.dz
+
+AISSAOUA Habib
+Grade: Maitre de conferences classe B
+Email: habib.aissaoua@univ-setif.dz
+Département: Informatique
+Bureau: 10
+
+AISSAOUI Mohammed
+Grade: Maitre assistant classe B
+Email: mohammed.aissaoui@univ-setif.dz
+Département: Informatique
+Bureau: 10
+
+ALIOUAT née ZOUAOUI Zibouda
+Grade: Professeur
+Email: zaliouat@univ-setif.dz
+Département: Informatique
+Bureau: 20
+
+ALTI Adel
+Grade: Maitre de conferences classe A
+Email: alti.adel@univ-setif.dz
+Département: Informatique
+
+Amar LAMRAOUI
+Grade: Maitre assistant classe A
+Email: amar.lamraoui@univ-setif.dz
+Département: Informatique
+
+BALBAL Samir
+Grade: Maitre de conferences classe B
+Email: samir.belbal@univ-setif.dzDépartement: Informatique
+Bureau: 05
+
+BOUAMARI Abdelkader
+Grade: Maitre assistant classe A
+Email: bouamari@univ-setif.dzDépartement: Informatique
+Bureau: 01
+
+Zier Abdelhak
+Grade: Maitre assistant classe B
+Email: abdelhak.zier@univ-setif.dz
+Département: Informatique
+Bureau: 19
+
+MANSOURI Houceme
+Grade: Maitre de conferences classe A
+Email: mansouri_houssem@univ-setif.dz
+Département: Informatique
+Bureau: 1
+
+
+
+
+
+
+
+
