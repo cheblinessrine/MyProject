@@ -68,10 +68,10 @@ def load_docs_locally(files):
         if not file.startswith("."):
             _, extension = os.path.splitext(file)
             if extension == ".pdf":
-                from langchain.document_loaders import PyPDFLoader 
+                from langchain_community.document_loaders import PyPDFLoader 
                 loader = PyPDFLoader(file)
             elif extension == ".txt":
-                from langchain.document_loaders import TextLoader 
+                from langchain_community.document_loaders import TextLoader 
                 loader = TextLoader(file, encoding="utf-8")
             else:
                 print(f"No loader available for file format: {extension}")
