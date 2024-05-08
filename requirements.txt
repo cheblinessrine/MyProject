@@ -1,11 +1,7 @@
-beautifulsoup4==4.12.3
-bs4==0.0.2
-# chromadb==0.5.0
-FAISS
-langchain==0.1.17
-langchain-community==0.0.37
-langchain-google-genai==1.0.3
-pypdf==4.2.0
-python-dotenv==1.0.1
 streamlit
-google.generativeai
+google-generativeai
+python-dotenv
+langchain
+PyPDF2
+faiss-cpu
+langchain_google_genai

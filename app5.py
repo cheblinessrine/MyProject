@@ -1,7 +1,7 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.vectorstores import FAISS
+from langchain.vectorstores import FAISS  # Modification de l'import
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 import streamlit as st
@@ -15,6 +15,7 @@ if os.environ:
 else:
     import getpass
     os.environ["GOOGLE_API_KEY"] = getpass.getpass("GOOGLE_API_KEY")
+
 # Set page title and layout
 st.set_page_config(
     page_title="BuddyBOT",
@@ -68,11 +69,14 @@ def load_docs_locally(files):
         if not file.startswith("."):
             _, extension = os.path.splitext(file)
             if extension == ".pdf":
-                from langchain_community.document_loaders import PyPDFLoader 
+                from langchain.document_loaders import PyPDFLoader 
                 loader = PyPDFLoader(file)
             elif extension == ".txt":
-                from langchain_community.document_loaders import TextLoader 
+                from langchain.document_loaders import TextLoader 
                 loader = TextLoader(file, encoding="utf-8")
+            elif extension == ".docx":
+                from langchain.document_loaders import Docx2textLoader
+                loader = Docx2textLoader(file)
             else:
                 print(f"No loader available for file format: {extension}")
             data += loader.load()
@@ -85,11 +89,19 @@ def chunk_data(docs):
     chunks = text_splitter.split_text(text)
     return chunks
 
-# Function to embed data
+# Function to embed data using FAISS
 def embed_data(chunks):
-    embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    vector_index =FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity", search_kwargs={"k": 5})
+    # Get Google API Key from environment variable
+    google_api_key = os.getenv("GOOGLE_API_KEY")
+
+    # Check if Google API Key is provided
+    if google_api_key is None:
+        raise ValueError("Google API Key is missing. Please set the GOOGLE_API_KEY environment variable.")
+    #google_api_key ="AIzaSyD7QVZAzF7HtoOgDJnlkHGvsJ2l6FChYrY"
+    embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=google_api_key)  # Pass the Google API Key as a named parameter
+    vector_index = FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity", search_kwargs={"k": 5})  # Modification de l'utilisation de FAISS
     return vector_index
+
 
 # Function to ask a question to the chatbot
 def ask_question(query, vector_index):
@@ -99,9 +111,9 @@ def ask_question(query, vector_index):
     Question: {question}
     """
     QA_CHAIN_TEMPLATE = PromptTemplate.from_template(template)
-    chroma_chain = RetrievalQA.from_chain_type(llm=ChatGoogleGenerativeAI(model="gemini-pro", temperature=1), retriever=vector_index, return_source_documents=True, chain_type_kwargs={"prompt": QA_CHAIN_TEMPLATE})
+    faiss_chain = RetrievalQA.from_chain_type(llm=ChatGoogleGenerativeAI(model="gemini-pro", temperature=1), retriever=vector_index, return_source_documents=True, chain_type_kwargs={"prompt": QA_CHAIN_TEMPLATE})
 
-    response = chroma_chain({"query": query})
+    response = faiss_chain({"query": query})
     result = response["result"]
     return result
 
