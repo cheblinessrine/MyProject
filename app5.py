@@ -84,7 +84,7 @@ def load_docs_locally(files):
 
 # Function to chunk data
 def chunk_data(docs):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=250, chunk_overlap=0)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=1000)
     text = "\n".join([doc.page_content for doc in docs])
     chunks = text_splitter.split_text(text)
     return chunks
