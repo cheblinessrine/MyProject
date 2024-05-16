@@ -1,7 +1,8 @@
+#streamlit run app5.py
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.vectorstores import FAISS  # Modification de l'import
+from langchain.vectorstores import FAISS 
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 import streamlit as st
@@ -151,7 +152,7 @@ def toggle_theme():
         )
 
 # List of files to load
-files = ["files/Banque_FR.pdf", "files/profe.txt"]
+files = ["files/Banque_FR.pdf","files/banque_AR.pdf","files/profe.txt"]
 docs = load_docs_locally(files)
 chunks = chunk_data(docs)
 vector_index = embed_data(chunks)
