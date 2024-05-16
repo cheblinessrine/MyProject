@@ -111,12 +111,6 @@ else:
     import getpass
     os.environ["GOOGLE_API_KEY"] = getpass.getpass("GOOGLE_API_KEY")
 
-# Set page title and layout
-st.set_page_config(
-    page_title="BuddyBOT",
-    page_icon=":robot_face:",
-    layout="wide"
-)
 # Function to load documents locally
 def load_docs_locally(files):
     data = []
