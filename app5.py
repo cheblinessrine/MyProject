@@ -90,28 +90,15 @@ def chunk_data(docs):
     return chunks
 
 # Function to embed data using FAISS
-import time
-from langchain_google_genai.embeddings import GoogleGenerativeAIError
-
 def embed_data(chunks):
+    # Get Google API Key from environment variable
     google_api_key = os.getenv("GOOGLE_API_KEY")
     if google_api_key is None:
         raise ValueError("Google API Key is missing. Please set the GOOGLE_API_KEY environment variable.")
-    
     embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=google_api_key)
-    
-    retries = 0
-    while retries < 3:  # Maximum number of retries
-        try:
-            vector_index = FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity")  # Adjusted FAISS usage
-            return vector_index
-        except GoogleGenerativeAIError as e:
-            retries += 1
-            if retries >= 3:  # If max retries reached, raise the error
-                raise e
-            time.sleep(2 ** retries)  # Exponential backoff for retrying
+    vector_index = FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity",search_kwargs={"k": 5})
+    return vector_index
 
-    raise ValueError("Error embedding content: Maximum retries exceeded. Please try again later.")
 
 # Function to ask a question to the chatbot
 def ask_question(query, vector_index):
