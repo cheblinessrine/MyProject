@@ -1,7 +1,7 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.vectorstores import FAISS 
+from langchain_community.vectorstores import FAISS
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 import streamlit as st
@@ -75,14 +75,11 @@ def load_docs_locally(files):
         if not file.startswith("."):
             _, extension = os.path.splitext(file)
             if extension == ".pdf":
-                from langchain.document_loaders import PyPDFLoader 
+                from langchain_community.document_loaders import PyPDFLoader 
                 loader = PyPDFLoader(file)
             elif extension == ".txt":
-                from langchain.document_loaders import TextLoader 
+                from langchain_community.document_loaders import TextLoader 
                 loader = TextLoader(file, encoding="utf-8")
-            elif extension == ".docx":
-                from langchain.document_loaders import Docx2textLoader
-                loader = Docx2textLoader(file)
             else:
                 print(f"No loader available for file format: {extension}")
             data += loader.load()
