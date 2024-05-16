@@ -93,6 +93,7 @@ def chunk_data(docs):
     return chunks
 
 # Function to embed data using FAISS
+# Function to embed data using FAISS
 def embed_data(chunks, batch_size=10, max_retries=3):
     google_api_key = os.getenv("GOOGLE_API_KEY")
     if google_api_key is None:
@@ -112,12 +113,13 @@ def embed_data(chunks, batch_size=10, max_retries=3):
             except GoogleGenerativeAIError as e:
                 retries += 1
                 if retries >= max_retries:
-                    raise e
+                    raise GoogleGenerativeAIError(f"Error in embedding data: {str(e)}")
                 time.sleep(2 ** retries)  # Exponential backoff
 
     # Create FAISS index from all embeddings
     vector_index = FAISS.from_texts(chunks, embedding)
     return vector_index
+
 
 # Function to ask a question to the chatbot
 def ask_question(query, vector_index):

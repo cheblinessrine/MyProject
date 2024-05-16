@@ -91,13 +91,18 @@ def chunk_data(docs):
 
 # Function to embed data using FAISS
 def embed_data(chunks):
+    from langchain_google_genai._common import GoogleGenerativeAIError
     # Get Google API Key from environment variable
     google_api_key = os.getenv("GOOGLE_API_KEY")
     if google_api_key is None:
         raise ValueError("Google API Key is missing. Please set the GOOGLE_API_KEY environment variable.")
-    embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=google_api_key)
-    vector_index = FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity",search_kwargs={"k": 5})
-    return vector_index
+
+    try:
+        embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=google_api_key)
+        vector_index = FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity",search_kwargs={"k": 5})
+        return vector_index
+    except Exception as e:
+        raise GoogleGenerativeAIError(f"Error embedding content: {str(e)}") from e
 
 
 # Function to ask a question to the chatbot
