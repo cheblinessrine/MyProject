@@ -1,7 +1,8 @@
+
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.vectorstores import FAISS 
+from langchain.vectorstores import FAISS  # Modification de l'import
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 import streamlit as st
@@ -182,4 +183,3 @@ for chat in st.session_state.chat_session:
 if st.button("Clear History"):
     clear_history()
     st.success("Chat history has been cleared.")
-    
