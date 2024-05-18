@@ -1,8 +1,7 @@
-
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.vectorstores import FAISS  # Modification de l'import
+from langchain.vectorstores import FAISS 
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 import streamlit as st
@@ -94,13 +93,10 @@ def chunk_data(docs):
 def embed_data(chunks):
     # Get Google API Key from environment variable
     google_api_key = os.getenv("GOOGLE_API_KEY")
-
-    # Check if Google API Key is provided
     if google_api_key is None:
         raise ValueError("Google API Key is missing. Please set the GOOGLE_API_KEY environment variable.")
-    #google_api_key ="AIzaSyD7QVZAzF7HtoOgDJnlkHGvsJ2l6FChYrY"
-    embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=google_api_key)  # Pass the Google API Key as a named parameter
-    vector_index = FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity")  # Modification de l'utilisation de FAISS
+    embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=google_api_key)
+    vector_index = FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity",search_kwargs={"k": 5})
     return vector_index
 
 
@@ -152,7 +148,7 @@ def toggle_theme():
         )
 
 # List of files to load
-files = ["files/Banque_FR.pdf", "files/profe.txt"]
+files = ["files/Banque_FR.pdf","files/banque_AR.pdf","files/profe.txt"]
 docs = load_docs_locally(files)
 chunks = chunk_data(docs)
 vector_index = embed_data(chunks)

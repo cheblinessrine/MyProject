@@ -1,26 +1,20 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_community.vectorstores import FAISS
+from langchain.vectorstores import FAISS  # Modification de l'import
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 import streamlit as st
-from langchain_google_genai.embeddings import GoogleGenerativeAIError
-import time
 import os
-
-def load_env():
-    from dotenv import load_dotenv, find_dotenv
-    load_dotenv(find_dotenv(), override=True)
-    if os.environ:
-        for api_key in os.environ:
-            if "API_KEY" in api_key:
-                print(api_key)
-    else:
-        import getpass
-        os.environ["GOOGLE_API_KEY"] = getpass.getpass("GOOGLE_API_KEY")
-
-load_env()
+from dotenv import load_dotenv ,find_dotenv
+load_dotenv(find_dotenv(), override=True)
+if os.environ:
+    for api_key in os.environ:
+        if "API_KEY" in api_key:
+            print(api_key)
+else:
+    import getpass
+    os.environ["GOOGLE_API_KEY"] = getpass.getpass("GOOGLE_API_KEY")
 
 # Set page title and layout
 st.set_page_config(
@@ -75,11 +69,14 @@ def load_docs_locally(files):
         if not file.startswith("."):
             _, extension = os.path.splitext(file)
             if extension == ".pdf":
-                from langchain_community.document_loaders import PyPDFLoader 
+                from langchain.document_loaders import PyPDFLoader 
                 loader = PyPDFLoader(file)
             elif extension == ".txt":
-                from langchain_community.document_loaders import TextLoader 
+                from langchain.document_loaders import TextLoader 
                 loader = TextLoader(file, encoding="utf-8")
+            elif extension == ".docx":
+                from langchain.document_loaders import Docx2textLoader
+                loader = Docx2textLoader(file)
             else:
                 print(f"No loader available for file format: {extension}")
             data += loader.load()
@@ -87,39 +84,16 @@ def load_docs_locally(files):
 
 # Function to chunk data
 def chunk_data(docs):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=1000)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=250, chunk_overlap=0)
     text = "\n".join([doc.page_content for doc in docs])
     chunks = text_splitter.split_text(text)
     return chunks
 
 # Function to embed data using FAISS
-# Function to embed data using FAISS
-def embed_data(chunks, batch_size=10, max_retries=3):
-    google_api_key = os.getenv("GOOGLE_API_KEY")
-    if google_api_key is None:
-        raise ValueError("Google API Key is missing. Please set the GOOGLE_API_KEY environment variable.")
-    
-    embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=google_api_key)
-    all_embeddings = []
-
-    for i in range(0, len(chunks), batch_size):
-        batch = chunks[i:i+batch_size]
-        retries = 0
-        while retries < max_retries:
-            try:
-                batch_embeddings = embedding.embed_documents(batch)
-                all_embeddings.extend(batch_embeddings)
-                break
-            except GoogleGenerativeAIError as e:
-                retries += 1
-                if retries >= max_retries:
-                    raise GoogleGenerativeAIError(f"Error in embedding data: {str(e)}")
-                time.sleep(2 ** retries)  # Exponential backoff
-
-    # Create FAISS index from all embeddings
-    vector_index = FAISS.from_texts(chunks, embedding)
+def embed_data(chunks):
+    embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    vector_index = FAISS.from_texts(chunks, embedding).as_retriever(search_type="similarity", search_kwargs={"k": 5})  # Modification de l'utilisation de FAISS
     return vector_index
-
 
 # Function to ask a question to the chatbot
 def ask_question(query, vector_index):
@@ -129,11 +103,7 @@ def ask_question(query, vector_index):
     Question: {question}
     """
     QA_CHAIN_TEMPLATE = PromptTemplate.from_template(template)
-
-    # Create retriever from vector index
-    retriever = vector_index.as_retriever()
-
-    faiss_chain = RetrievalQA.from_chain_type(llm=ChatGoogleGenerativeAI(model="gemini-pro", temperature=1), retriever=retriever, return_source_documents=True, chain_type_kwargs={"prompt": QA_CHAIN_TEMPLATE})
+    faiss_chain = RetrievalQA.from_chain_type(llm=ChatGoogleGenerativeAI(model="gemini-pro", temperature=1), retriever=vector_index, return_source_documents=True, chain_type_kwargs={"prompt": QA_CHAIN_TEMPLATE})
 
     response = faiss_chain({"query": query})
     result = response["result"]
@@ -173,7 +143,7 @@ def toggle_theme():
         )
 
 # List of files to load
-files = ["files/Banque_FR.pdf","files/banque_AR.pdf","files/profe.txt"]
+files = ["files/Banque_FR.pdf", "files/profe.txt"]
 docs = load_docs_locally(files)
 chunks = chunk_data(docs)
 vector_index = embed_data(chunks)
