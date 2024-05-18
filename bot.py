@@ -104,10 +104,11 @@ def create_index(chunks: List[str]):
 
 from typing import List
 
+# to PREVENT BREAKING THE MAIN LOOP
 
 def load_docs(docs_urls=["https://pypi.org/"]):
     from langchain.document_loaders.async_html import AsyncHtmlLoader
-
+    get_or_create_eventloop()
     print("loading started....")
     loader = AsyncHtmlLoader(docs_urls)
     documents = loader.load()
